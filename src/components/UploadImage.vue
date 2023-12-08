@@ -1,90 +1,109 @@
 <template>
     <div class="upload-image-container">
-        <loading v-if="isLoading"/>
-        <h2 class="upload-image-title" >Upload Image</h2>
-        <p class="upload-image-content">Vui lòng upload hình ảnh 4 mặt sổ đỏ</p>
-        <p class="upload-image-description">Chấp nhận định dạng JPG, PNG</p>
-        <div class="upload-image-link">
-            <div class="link-item">
-                <p>Mặt trước</p>
-                <input type="file" accept=".jpg, .png" :value="listImages.font"  @input="event => listImages.front= event.target.value">
-            </div>
-            <div class="link-item">
-                <p>Mặt trong bên trái</p>
-                <input type="file" accept=".jpg, .png" :value="listImages.inner_left"  @input="event => listImages.inner_left= event.target.value">
-            </div>
-            <div class="link-item">
-                <p>Mặt trong bên phải</p>
-                <input type="file" accept=".jpg, .png" :value="listImages.inner_right"  @input="event => listImages.inner_right= event.target.value">
-            </div>
-            <div class="link-item">
-                <p>Mặt sau</p>
-                <input type="file" accept=".jpg, .png" :value="listImages.back"  @input="event => listImages.back= event.target.value">
-            </div>
+      <loading v-if="isLoading" />
+      <h2 class="upload-image-title">Upload Image</h2>
+      <p class="upload-image-content">Vui lòng upload hình ảnh 4 mặt sổ đỏ</p>
+      <p class="upload-image-description">Chấp nhận định dạng JPG, PNG</p>
+      <div class="upload-image-link">
+        <div class="link-item">
+          <p>Mặt trước</p>
+          <input
+            type="file"
+            accept=".jpg, .png"
+            @change="handleFileChange('front', $event)"
+          />
         </div>
-        <div class="upload-image-address">
-            <p>File đã thêm:</p>
-            <ul>
-                <li v-for="(value, key) in listImages" :key="key" class="address-item">
-                    <span>{{ key == 'front'? "Mặt trước" : 
-                            key === 'inner_left'? 
-                            "Mặt trong bên trái" : 
-                            key === "back" ? "Mặt sau" : "Mặt trong bên phải" }}:
-                    </span>
-                    <span class="link-content">{{ value }}</span>
-                </li>
-            </ul>
+        <div class="link-item">
+          <p>Mặt trong bên trái</p>
+          <input
+            type="file"
+            accept=".jpg, .png"
+            @change="handleFileChange('inner_left', $event)"
+          />
         </div>
-        <button @click="test1" class="button-continue">Tiếp tục</button>
+        <div class="link-item">
+          <p>Mặt trong bên phải</p>
+          <input
+            type="file"
+            accept=".jpg, .png"
+            @change="handleFileChange('inner_right', $event)"
+          />
+        </div>
+        <div class="link-item">
+          <p>Mặt sau</p>
+          <input
+            type="file"
+            accept=".jpg, .png"
+            @change="handleFileChange('back', $event)"
+          />
+        </div>
+      </div>
+      <div class="upload-image-address">
+        <p>File đã thêm:</p>
+        <ul>
+          <li v-for="(value, key) in listImages" :key="key" class="address-item">
+            <span>
+              {{
+                key == 'front'
+                  ? 'Mặt trước'
+                  : key === 'inner_left'
+                  ? 'Mặt trong bên trái'
+                  : key === 'back'
+                  ? 'Mặt sau'
+                  : 'Mặt trong bên phải'
+              }}:
+            </span>
+            <span class="link-content">{{ value }}</span>
+          </li>
+        </ul>
+      </div>
+      <button @click="test1" class="button-continue">Tiếp tục</button>
     </div>
-</template>
-<script setup>
-import { ref } from "vue";
-import loading from "@/components/Loading.vue"
-import { uploadImage } from "@/services/image.service.js"
-import { useRouter } from "vue-router"
-
-const router = useRouter()
-
-const listImages = ref({
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  import loading from '@/components/Loading.vue';
+  import { uploadImage } from '@/services/image.service.js';
+  import { useRouter } from 'vue-router';
+  
+  const router = useRouter();
+  
+  const listImages = ref({
     front: null,
     inner_left: null,
     inner_right: null,
-    back: null
-});
-const isLoading = ref(false)
-// const test = () => {
-//     console.log("heheh", listImages.value);
-// };
-const activePoint = ref(null);
-
-const setActivePoint = (point) => {
-  activePoint.value = point;
-};
-
-const test1 = async () => {
+    back: null,
+  });
+  const isLoading = ref(false);
+  
+  const handleFileChange = (key, event) => {
+    listImages.value[key] = event.target.files[0];
+  };
+  
+  const test1 = async () => {
     try {
-        let data = new FormData();
-
-        for (const key in listImages.value) {
-            if (listImages.value[key]) {
-                data.append(key, listImages.value[key]);
-            } else {
-                data.append(key, "null");
-            }
+      let data = new FormData();
+  
+      for (const key in listImages.value) {
+        if (listImages.value[key]) {
+          data.append(key, listImages.value[key]);
+        } else {
+          data.append(key, null);
         }
-
-        const listData = await uploadImage(data)
-        isLoading.value = true
-        if(listData.status === 200) {
-            isLoading.value = false
-            router.push(`/data`)
-        }
+      }
+  
+      const listData = await uploadImage(data);
+      isLoading.value = true;
+      if (listData.status === 200) {
+        isLoading.value = false;
+        router.push(`/data`);
+      }
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
-}
-</script>
+  };
+  </script>
 <style scoped>
 .upload-image-container {
     display: flex;
