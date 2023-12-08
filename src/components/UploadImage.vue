@@ -41,7 +41,7 @@
 <script setup>
 import { ref } from "vue";
 import loading from "@/components/Loading.vue"
-import { uploadImage, test } from "@/services/image.service.js"
+import { uploadImage } from "@/services/image.service.js"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -64,12 +64,16 @@ const setActivePoint = (point) => {
 
 const test1 = async () => {
     try {
-        let data = new FormData()
-        data.append('img_front', listImages.font)
-        data.append('img_back', listImages.back)
-        data.append('img_inner_left', listImages.inner_left)
-        data.append('img_inner_right', listImages.inner_right)
-        console.log('data', data);
+        let data = new FormData();
+
+        for (const key in listImages.value) {
+            if (listImages.value[key]) {
+                data.append(key, listImages.value[key]);
+            } else {
+                data.append(key, "null");
+            }
+        }
+
         const listData = await uploadImage(data)
         isLoading.value = true
         if(listData.status === 200) {
