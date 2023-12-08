@@ -29,7 +29,12 @@ const router = createRouter({
         {
             path: "/",
             name: "login",
-            component: () => import("../components/FormLogin.vue"),
+            component: () => import("../components/UploadImage.vue"),
+        },
+        {
+            path: "/data",
+            name: "data",
+            component: () => import("../components/DataDetect.vue"),
         },
         {
             path: "/login",
@@ -39,14 +44,5 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach((to, from) => {
-
-    const authRouter = useAuthStore();
-
-    const token = authRouter.token;
-
-    if(to.name !== 'login' && !token) return '/login';
-    if(to.name === 'login' && token) return '/listUser';
-})
 
 export default router;
