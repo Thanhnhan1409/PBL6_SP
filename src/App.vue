@@ -2,17 +2,7 @@
 import { ref } from "vue";
 import { RouterView } from "vue-router";
 import HeaderPage from "./components/HeaderPage.vue";
-import { useCounterStore } from "./store";
 
-const counterStore = useCounterStore();
-
-const changeNumber = (isPlus) => {
-  console.log("dang lam");
-  console.log("counterStore", counterStore);
-  isPlus ? counterStore.increment() : counterStore.decrement();
-  console.log("alo alo");
-  counterStore.$reset; // reset về giá trị ban đầu khởi tạo trong store
-};
 </script>
 
 <template>
